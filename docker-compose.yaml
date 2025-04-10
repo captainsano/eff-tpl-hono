@@ -1,0 +1,9 @@
+services:
+  otel-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.1
+    environment:
+      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+    ports:
+      - "8001:18888" # Dashboard web URl
+      - "4317:18889" # OTLP gRPC
+      - "4318:18890" # OTLP HTTP
