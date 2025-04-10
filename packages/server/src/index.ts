@@ -1,3 +1,3 @@
-import { hello } from './hello.ts'
+import { hello } from "./hello.ts"
 
-hello();
+hello()
