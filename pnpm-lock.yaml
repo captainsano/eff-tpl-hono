@@ -31,6 +31,10 @@ importers:
         version: 5.8.3
 
   packages/server:
+    dependencies:
+      effect:
+        specifier: ^3.14.7
+        version: 3.14.7
     devDependencies:
       '@types/node':
         specifier: ^22.14.0
@@ -247,6 +251,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
+
   '@tsconfig/node-lts@22.0.1':
     resolution: {integrity: sha512-BwlbLiYurZKrj+Pa6etSE1jXmr3VEDdgJto1jEYKcpBVwZZSWVkCPyFEFYbHdIOaFMlSTtV206DYPlT109aqug==}
 
@@ -262,10 +269,17 @@ packages:
   '@types/node@22.14.0':
     resolution: {integrity: sha512-Kmpl+z84ILoG+3T/zQFyAJsU6EPTmOCj8/2+83fSN6djd6I4o7uOuGIH6vq3PrjY5BGitSbFuMN18j3iknubbA==}
 
+  effect@3.14.7:
+    resolution: {integrity: sha512-vAev6B05EYMhh1fpCKsiUdVKmT0ph3TjTTfPno384dLL39tI88OIV2QNkNby506NY1L/w1NIaxcaKGfEw3rPhw==}
+
   esbuild@0.25.2:
     resolution: {integrity: sha512-16854zccKPnC+toMywC+uKNeYSv+/eXkevRAfwRD/G9Cleq66m8XFIrigkbvauLLlCfDL45Q2cWegSg53gGBnQ==}
     engines: {node: '>=18'}
     hasBin: true
+
+  fast-check@3.23.2:
+    resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
+    engines: {node: '>=8.0.0'}
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -328,6 +342,9 @@ packages:
   lefthook@1.11.8:
     resolution: {integrity: sha512-U+x49i83GWjRigejsiEnGMsH34SjUFtSGd4VuEUWDFzDc2uerzTx5oqFv0GMwCIXTxsecoPqop+e+1gop8DDXA==}
     hasBin: true
+
+  pure-rand@6.1.0:
+    resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
 
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
@@ -457,6 +474,8 @@ snapshots:
   '@esbuild/win32-x64@0.25.2':
     optional: true
 
+  '@standard-schema/spec@1.0.0': {}
+
   '@tsconfig/node-lts@22.0.1': {}
 
   '@tsconfig/node-ts@23.6.1': {}
@@ -468,6 +487,11 @@ snapshots:
   '@types/node@22.14.0':
     dependencies:
       undici-types: 6.21.0
+
+  effect@3.14.7:
+    dependencies:
+      '@standard-schema/spec': 1.0.0
+      fast-check: 3.23.2
 
   esbuild@0.25.2:
     optionalDependencies:
@@ -496,6 +520,10 @@ snapshots:
       '@esbuild/win32-arm64': 0.25.2
       '@esbuild/win32-ia32': 0.25.2
       '@esbuild/win32-x64': 0.25.2
+
+  fast-check@3.23.2:
+    dependencies:
+      pure-rand: 6.1.0
 
   fsevents@2.3.3:
     optional: true
@@ -546,6 +574,8 @@ snapshots:
       lefthook-openbsd-x64: 1.11.8
       lefthook-windows-arm64: 1.11.8
       lefthook-windows-x64: 1.11.8
+
+  pure-rand@6.1.0: {}
 
   resolve-pkg-maps@1.0.0: {}
 

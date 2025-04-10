@@ -12,5 +12,8 @@
     "@types/node": "^22.14.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8"
+  },
+  "dependencies": {
+    "effect": "^3.14.7"
   }
 }

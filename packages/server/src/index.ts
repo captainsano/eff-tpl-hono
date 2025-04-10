@@ -1,3 +1,4 @@
+import { Effect } from "effect"
 import { hello } from "./hello.ts"
 
-hello()
+await Effect.runPromise(hello)
