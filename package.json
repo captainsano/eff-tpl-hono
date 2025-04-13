@@ -5,7 +5,8 @@
     "dev": "pnpm --parallel dev",
     "typecheck": "pnpm --parallel typecheck",
     "format": "biome check --write ./packages/**/*",
-    "format:ci": "biome check ./packages/**/*"
+    "format:ci": "biome check ./packages/**/*",
+    "prepare": "husky"
   },
   "packageManager": "pnpm@10.8.0",
   "devDependencies": {
@@ -14,7 +15,7 @@
     "@tsconfig/node-ts": "^23.6.1",
     "@tsconfig/recommended": "^1.0.8",
     "@tsconfig/strictest": "^2.0.5",
-    "lefthook": "^1.11.8",
+    "husky": "^9.1.7",
     "typescript": "^5.8"
   }
 }

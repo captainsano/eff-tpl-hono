@@ -6,14 +6,10 @@ import { SimpleLogRecordProcessor } from "@opentelemetry/sdk-logs"
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics"
 import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node"
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from "@opentelemetry/semantic-conventions"
-import { Effect, Logger, pipe } from "effect"
+import { Effect, pipe } from "effect"
 import express from "express"
 import { log } from "./otel/log.ts"
 import { otelResource } from "./otel/resource.ts"
-
-const otelLogger = Logger.make(({ logLevel, message }) => {
-  log.emit({ body: String(message), severityText: String(logLevel).toUpperCase() })
-})
 
 const nodeSdkLayer = NodeSdk.layer(() => ({
   logRecordProcessor: new SimpleLogRecordProcessor(new OTLPLogExporter()),
