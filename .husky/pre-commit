@@ -1,2 +1,2 @@
-pnpm format:ci
-pnpm typecheck
+bun format:ci
+bun typecheck

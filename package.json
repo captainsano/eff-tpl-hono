@@ -1,14 +1,14 @@
 {
   "name": "eff-tpl",
   "version": "1.0.0",
+  "workspaces": ["packages/*"],
   "scripts": {
-    "dev": "pnpm --parallel dev",
-    "typecheck": "pnpm --parallel typecheck",
+    "dev": "bun -F './packages/*' dev",
+    "typecheck": "bun -F './packages/*' typecheck",
     "format": "biome check --write ./packages/**/*",
     "format:ci": "biome check ./packages/**/*",
     "prepare": "husky"
   },
-  "packageManager": "pnpm@10.8.0",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@tsconfig/node-lts": "^22.0.1",
