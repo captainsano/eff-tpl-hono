@@ -1,7 +1,0 @@
-services:
-  otel-dashboard:
-    image: docker.io/grafana/otel-lgtm
-    ports:
-      - "3000:3000" # Dashboard web
-      - "4317:4317" # OTLP gRPC
-      - "4318:4318" # OTLP HTTP
