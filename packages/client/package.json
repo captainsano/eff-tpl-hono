@@ -1,0 +1,23 @@
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bunx --bun vite",
+    "build": "tsc && bunx --bun vite build",
+    "preview": "bunx --bun vite preview"
+  },
+  "dependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@tsconfig/vite-react": "^3.4.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.8",
+    "vite": "^6.2.6"
+  }
+}
