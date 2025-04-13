@@ -1,7 +1,7 @@
 import { Effect, pipe } from "effect"
-import express from "express"
+import { Hono } from "hono"
 
-const app = express()
+const app = new Hono()
 
 const child = Effect.gen(function* () {
   yield* Effect.sleep("100 millis")
@@ -13,16 +13,18 @@ const parent = Effect.gen(function* () {
   yield* Effect.logInfo("This is a parent log")
   yield* child
   yield* Effect.sleep("10 millis")
+  return "hello world"
 }).pipe(Effect.withSpan("parent"))
 
-app.get("/hello", async (_, res) => {
-  await pipe(parent, Effect.withSpan("GET /hello"), Effect.runPromise)
+app.get("/hello", async (c) => {
+  const response = await pipe(parent, Effect.withSpan("GET /hello"), Effect.runPromise)
 
-  res.send("hello")
+  return c.text(response)
 })
 
 const PORT = Number.parseInt(process.env.PORT ?? "8000")
 
-app.listen(PORT, () => {
-  console.log("server listening...", { port: PORT })
-})
+export default {
+  port: PORT,
+  fetch: app.fetch,
+}
