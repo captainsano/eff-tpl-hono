@@ -1,7 +1,9 @@
 {
   "name": "eff-tpl",
   "version": "1.0.0",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "bun -F './packages/*' dev",
     "typecheck": "bun -F './packages/*' typecheck",
@@ -11,6 +13,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@effect/language-service": "^0.6.0",
     "@tsconfig/node-lts": "^22.0.1",
     "@tsconfig/node-ts": "^23.6.1",
     "@tsconfig/recommended": "^1.0.8",
