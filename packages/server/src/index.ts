@@ -1,7 +1,8 @@
-import { Effect, pipe } from "effect"
+import { BunContext, BunRuntime } from "@effect/platform-bun"
+import { serve } from "bun"
+import { Effect, Layer, pipe, Runtime } from "effect"
 import { Hono } from "hono"
-
-const app = new Hono()
+import { ServerConfig } from "./config/server"
 
 const child = Effect.gen(function* () {
   yield* Effect.sleep("100 millis")
@@ -16,15 +17,49 @@ const parent = Effect.gen(function* () {
   return "hello world"
 }).pipe(Effect.withSpan("parent"))
 
-app.get("/hello", async (c) => {
-  const response = await pipe(parent, Effect.withSpan("GET /hello"), Effect.runPromise)
+const serverLayer = Layer.scopedDiscard(
+  Effect.gen(function* () {
+    const runPromise = Runtime.runPromise(Runtime.defaultRuntime)
+    const serverConfig = yield* ServerConfig
 
-  return c.text(response)
-})
+    yield* Effect.logInfo("Starting server on port ", serverConfig.port)
 
-const PORT = Number.parseInt(process.env.PORT ?? "8000", 10)
+    const app = new Hono()
 
-export default {
-  port: PORT,
-  fetch: app.fetch,
-}
+    app.get("/hello", async (c) => {
+      const response = await pipe(parent, Effect.withSpan("GET /hello"), runPromise)
+
+      return c.text(response)
+    })
+
+    const server = yield* Effect.sync(() =>
+      serve({ development: false, port: serverConfig.port, fetch: app.fetch }),
+    )
+
+    yield* Effect.addFinalizer(
+      Effect.fn(function* () {
+        yield* Effect.logInfo("Shutting down server on port ", serverConfig.port)
+        yield* Effect.promise(() => server.stop())
+      }),
+    )
+  }),
+)
+
+const dependencies = Layer.empty.pipe(
+  Layer.provideMerge(ServerConfig.default),
+  Layer.provideMerge(BunContext.layer),
+)
+
+const program = Layer.launch(serverLayer).pipe(
+  Effect.provide(dependencies),
+  Effect.catchTag("ConfigError", (e) =>
+    Effect.gen(function* () {
+      yield* Effect.logError("Configuration Error: ", e.message)
+      return yield* Effect.dieMessage(e.message)
+    }),
+  ),
+  Effect.ensureErrorType<never>(),
+  Effect.ensureRequirementsType<never>(),
+)
+
+BunRuntime.runMain(program)
