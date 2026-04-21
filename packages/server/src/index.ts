@@ -45,12 +45,14 @@ const serverLayer = Layer.scopedDiscard(
   }),
 )
 
-const dependencies = Layer.empty.pipe(
+const dependencies = pipe(
+  Layer.empty,
   Layer.provideMerge(ServerConfig.default),
   Layer.provideMerge(BunContext.layer),
 )
 
-const program = Layer.launch(serverLayer).pipe(
+const program = pipe(
+  Layer.launch(serverLayer),
   Effect.provide(dependencies),
   Effect.catchTag("ConfigError", (e) =>
     Effect.gen(function* () {
