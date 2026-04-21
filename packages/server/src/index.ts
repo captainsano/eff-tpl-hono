@@ -1,13 +1,13 @@
-import { Otlp, OtlpSerialization } from "@effect/opentelemetry"
-import { FetchHttpClient } from "@effect/platform"
 import { BunContext, BunRuntime } from "@effect/platform-bun"
 import { serve } from "bun"
 import { Clock, Effect, Exit, FiberSet, Layer, pipe, type Tracer } from "effect"
 import { Hono } from "hono"
 import { upgradeWebSocket, websocket } from "hono/bun"
 import type { WSEvents } from "hono/ws"
+import { LoggerConfig } from "./config/logger"
 import { ObservabilityConfig } from "./config/observability"
 import { ServerConfig } from "./config/server"
+import { LoggerLayer, ObservabilityLayer } from "./observability"
 
 const child = Effect.gen(function* () {
   yield* Effect.sleep("100 millis")
@@ -95,27 +95,13 @@ const serverLayer = Layer.scopedDiscard(
   }),
 )
 
-const Observability = Layer.unwrapEffect(
-  Effect.gen(function* () {
-    const config = yield* ObservabilityConfig
-
-    return Otlp.layer({
-      baseUrl: config.baseUrl,
-      resource: { serviceName: config.serviceName },
-      metricsExportInterval: config.metricsExportInterval,
-      tracerExportInterval: config.tracerExportInterval,
-      loggerExportInterval: config.loggerExportInterval,
-    })
-  }),
-)
-
 const dependencies = pipe(
   Layer.empty,
-  Layer.provideMerge(Observability),
+  Layer.provideMerge(ObservabilityLayer),
+  Layer.provideMerge(LoggerLayer),
   Layer.provideMerge(ServerConfig.default),
   Layer.provideMerge(ObservabilityConfig.default),
-  Layer.provideMerge(FetchHttpClient.layer),
-  Layer.provideMerge(OtlpSerialization.layerProtobuf),
+  Layer.provideMerge(LoggerConfig.layer),
   Layer.provideMerge(BunContext.layer),
 )
 
