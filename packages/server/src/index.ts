@@ -22,7 +22,7 @@ app.get("/hello", async (c) => {
   return c.text(response)
 })
 
-const PORT = Number.parseInt(process.env.PORT ?? "8000")
+const PORT = Number.parseInt(process.env.PORT ?? "8000", 10)
 
 export default {
   port: PORT,
