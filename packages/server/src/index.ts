@@ -1,7 +1,10 @@
+import { Otlp, OtlpSerialization } from "@effect/opentelemetry"
+import { FetchHttpClient } from "@effect/platform"
 import { BunContext, BunRuntime } from "@effect/platform-bun"
 import { serve } from "bun"
-import { Effect, Layer, pipe, Runtime } from "effect"
+import { Effect, FiberSet, Layer, pipe } from "effect"
 import { Hono } from "hono"
+import { ObservabilityConfig } from "./config/observability"
 import { ServerConfig } from "./config/server"
 
 const child = Effect.gen(function* () {
@@ -19,10 +22,10 @@ const parent = Effect.gen(function* () {
 
 const serverLayer = Layer.scopedDiscard(
   Effect.gen(function* () {
-    const runPromise = Runtime.runPromise(Runtime.defaultRuntime)
-    const serverConfig = yield* ServerConfig
+    const runPromise = yield* FiberSet.makeRuntimePromise()
+    const config = yield* ServerConfig
 
-    yield* Effect.logInfo("Starting server on port ", serverConfig.port)
+    yield* Effect.logInfo("Starting server on port ", config.port)
 
     const app = new Hono()
 
@@ -33,21 +36,39 @@ const serverLayer = Layer.scopedDiscard(
     })
 
     const server = yield* Effect.sync(() =>
-      serve({ development: false, port: serverConfig.port, fetch: app.fetch }),
+      serve({ development: false, port: config.port, fetch: app.fetch }),
     )
 
     yield* Effect.addFinalizer(
       Effect.fn(function* () {
-        yield* Effect.logInfo("Shutting down server on port ", serverConfig.port)
+        yield* Effect.logInfo("Shutting down server on port ", config.port)
         yield* Effect.promise(() => server.stop())
       }),
     )
   }),
 )
 
+const Observability = Layer.unwrapEffect(
+  Effect.gen(function* () {
+    const config = yield* ObservabilityConfig
+
+    return Otlp.layer({
+      baseUrl: config.baseUrl,
+      resource: { serviceName: config.serviceName },
+      metricsExportInterval: config.metricsExportInterval,
+      tracerExportInterval: config.tracerExportInterval,
+      loggerExportInterval: config.loggerExportInterval,
+    })
+  }),
+)
+
 const dependencies = pipe(
   Layer.empty,
+  Layer.provideMerge(Observability),
   Layer.provideMerge(ServerConfig.default),
+  Layer.provideMerge(ObservabilityConfig.default),
+  Layer.provideMerge(FetchHttpClient.layer),
+  Layer.provideMerge(OtlpSerialization.layerProtobuf),
   Layer.provideMerge(BunContext.layer),
 )
 

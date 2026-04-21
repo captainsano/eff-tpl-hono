@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  lgtm:
+    image: grafana/otel-lgtm
+    ports:
+      - "3000:3000"
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - lgtm-data:/var/lib/grafana
+      - otel-data:/var/otel
+
+volumes:
+  lgtm-data:
+  otel-data:
