@@ -29,7 +29,7 @@ export const LoggerLayer = pipe(
       return Logger.pretty
     }
 
-    return Layer.empty
+    return Logger.structured
   }),
   Layer.unwrapEffect,
 )
