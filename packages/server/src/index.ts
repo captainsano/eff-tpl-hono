@@ -39,8 +39,8 @@ const serverLayer = Layer.scopedDiscard(
 
     app.get(
       "/ws",
-      upgradeWebSocket(async (_c) => {
-        const response = await pipe(
+      upgradeWebSocket((_c) =>
+        pipe(
           Effect.gen(function* () {
             let trace: Tracer.Span
 
@@ -78,10 +78,8 @@ const serverLayer = Layer.scopedDiscard(
           }),
           Effect.withSpan("GET /ws upgradeWebSocket"),
           runPromise,
-        )
-
-        return response
-      }),
+        ),
+      ),
     )
 
     const server = yield* Effect.sync(() =>
