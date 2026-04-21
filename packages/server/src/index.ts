@@ -2,8 +2,10 @@ import { Otlp, OtlpSerialization } from "@effect/opentelemetry"
 import { FetchHttpClient } from "@effect/platform"
 import { BunContext, BunRuntime } from "@effect/platform-bun"
 import { serve } from "bun"
-import { Effect, FiberSet, Layer, pipe } from "effect"
+import { Clock, Effect, Exit, FiberSet, Layer, pipe, type Tracer } from "effect"
 import { Hono } from "hono"
+import { upgradeWebSocket, websocket } from "hono/bun"
+import type { WSEvents } from "hono/ws"
 import { ObservabilityConfig } from "./config/observability"
 import { ServerConfig } from "./config/server"
 
@@ -35,8 +37,55 @@ const serverLayer = Layer.scopedDiscard(
       return c.text(response)
     })
 
+    app.get(
+      "/ws",
+      upgradeWebSocket(async (_c) => {
+        const response = await pipe(
+          Effect.gen(function* () {
+            let trace: Tracer.Span
+
+            return {
+              onOpen() {
+                runPromise(
+                  Effect.gen(function* () {
+                    trace = yield* Effect.makeSpan("GET /ws")
+                    yield* Effect.logInfo("WebSocket connection opened")
+                  }),
+                )
+              },
+              onClose() {
+                runPromise(
+                  Effect.gen(function* () {
+                    const currentTimeNanos = yield* Clock.currentTimeNanos
+                    if (trace) {
+                      trace.end(currentTimeNanos, Exit.succeed(void 0))
+                    }
+                    yield* Effect.logInfo("WebSocket connection closed")
+                  }),
+                )
+              },
+              onMessage(evt, _ws) {
+                pipe(
+                  Effect.gen(function* () {
+                    yield* Effect.logInfo("Received message: ", evt.data)
+                    yield* parent
+                  }),
+                  Effect.withParentSpan(trace),
+                  runPromise,
+                )
+              },
+            } as WSEvents
+          }),
+          Effect.withSpan("GET /ws upgradeWebSocket"),
+          runPromise,
+        )
+
+        return response
+      }),
+    )
+
     const server = yield* Effect.sync(() =>
-      serve({ development: false, port: config.port, fetch: app.fetch }),
+      serve({ development: false, port: config.port, fetch: app.fetch, websocket }),
     )
 
     yield* Effect.addFinalizer(
