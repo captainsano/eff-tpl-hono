@@ -1,12 +1,9 @@
 {
   "name": "eff-tpl",
   "version": "1.0.0",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
-    "dev": "bun -F './packages/*' dev",
-    "typecheck": "bun -F './packages/*' typecheck",
+    "dev": "pnpm -r --parallel run dev",
+    "typecheck": "pnpm -r run typecheck",
     "format": "biome check --write ./packages/**/*",
     "format:ci": "biome check ./packages/**/*",
     "clean": "rimraf node_modules packages/*/node_modules packages/*/dist",
@@ -15,7 +12,6 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.12",
     "@effect/language-service": "0.85.1",
-    "@tsconfig/bun": "1.0.10",
     "@tsconfig/recommended": "1.0.13",
     "@tsconfig/strictest": "2.0.8",
     "husky": "9.1.7",

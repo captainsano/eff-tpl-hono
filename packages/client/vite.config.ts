@@ -1,13 +1,21 @@
 import tailwindcss from "@tailwindcss/vite"
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
-import react from "@vitejs/plugin-react"
+import { devtools } from "@tanstack/devtools-vite"
+
+import { tanstackStart } from "@tanstack/react-start/plugin/vite"
+
+import viteReact from "@vitejs/plugin-react"
+import { nitro } from "nitro/vite"
 import { defineConfig } from "vite"
 
-// https://vitejs.dev/config/
-export default defineConfig({
+const config = defineConfig({
+  resolve: { tsconfigPaths: true },
   plugins: [
+    devtools(),
+    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tailwindcss(),
-    TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
-    react(),
+    tanstackStart(),
+    viteReact(),
   ],
 })
+
+export default config

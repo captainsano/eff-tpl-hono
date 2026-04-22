@@ -8,11 +8,12 @@
 	"files": {
 		"ignoreUnknown": true,
 		"includes": [
-			"**",
-			"!**/node_modules",
-			"!**/dist",
-			"!**/build",
-			"!**/routeTree.gen.ts"
+			"**/src/**/*",
+			"**/.vscode/**/*",
+			"**/index.html",
+			"**/vite.config.ts",
+			"!**/src/routeTree.gen.ts",
+			"!**/src/styles.css"
 		]
 	},
 	"formatter": {
